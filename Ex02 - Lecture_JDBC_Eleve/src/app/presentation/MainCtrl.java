@@ -42,20 +42,44 @@ public class MainCtrl implements Initializable {
   public void initialize(URL url, ResourceBundle rb) {
     dbWrk = new DbWorker();
     ouvrirDB();
+    
   }
 
   @FXML
   public void actionPrevious(ActionEvent event) {
-      
+      try{
+        //Récupération de la personne précédente
+        Personne personne = dbWrk.precedentPersonne();
+        
+        //Afficher la personne sur l'interface
+        this.afficherPersonne(personne);
+      } catch (MyDBException e){
+          
+      }
   }
 
   @FXML
   public void actionNext(ActionEvent event) {
-
+      try{
+        //Récupération de la personne suivante
+        Personne personne = dbWrk.suivantPersonne();
+        
+        //Afficher la personne sur l'interface
+        this.afficherPersonne(personne);
+      } catch (MyDBException e){
+          
+      }
   }
 
-  public void quitter() {
-
+  public void quitter() {      
+        try{
+          //Déeconnecter la base de données
+          dbWrk.deconnecter();
+        } catch (MyDBException e) {
+          
+        }
+     
+    //Fermer l'application
     Platform.exit();
   }
 
@@ -63,7 +87,11 @@ public class MainCtrl implements Initializable {
    * METHODES PRIVEES 
    */
   private void afficherPersonne(Personne p) {
-
+      //Si l'objet n'est pas null
+      if(p != null){
+        txtNom.setText(p.getNom()); //Field du nom
+        txtPrenom.setText(p.getPrenom()); //Field du prénom
+      }
   }
 
   private void ouvrirDB() {
