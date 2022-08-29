@@ -75,9 +75,11 @@ public class DbWorker implements DbWorkerItf {
        
         //Récupération des personnes
         try{
-            Statement requete = dbConnexion.createStatement();
+            //Pour éviter des injections SQL
+            PreparedStatement requete = dbConnexion.prepareStatement("select nom, prenom from t_personne");
         
-            ResultSet rs = requete.executeQuery("select * from t_personne");
+            //Execution de la requête
+            ResultSet rs = requete.executeQuery();
             
             //Pour chaque résultats
             while(rs.next()){
