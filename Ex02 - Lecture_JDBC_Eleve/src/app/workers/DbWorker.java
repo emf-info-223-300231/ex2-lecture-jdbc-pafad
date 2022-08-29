@@ -27,7 +27,7 @@ public class DbWorker implements DbWorkerItf {
         final String user = "root";
         final String password = "emf123";
 
-        System.out.println("url:" + url_remote);
+        System.out.println("url:" + url_local);
         try {
             dbConnexion = DriverManager.getConnection(url_remote, user, password);
         } catch (SQLException ex) {
