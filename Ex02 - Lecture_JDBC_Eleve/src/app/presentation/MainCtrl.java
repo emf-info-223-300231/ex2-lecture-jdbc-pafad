@@ -12,6 +12,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 import java.io.File;
 import app.workers.DbWorkerItf;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 
 /**
@@ -42,7 +44,6 @@ public class MainCtrl implements Initializable {
   public void initialize(URL url, ResourceBundle rb) {
     dbWrk = new DbWorker();
     ouvrirDB();
-    
   }
 
   @FXML
@@ -67,7 +68,6 @@ public class MainCtrl implements Initializable {
         //Afficher la personne sur l'interface
         this.afficherPersonne(personne);
       } catch (MyDBException e){
-          
       }
   }
 
@@ -75,8 +75,7 @@ public class MainCtrl implements Initializable {
         try{
           //Déeconnecter la base de données
           dbWrk.deconnecter();
-        } catch (MyDBException e) {
-          
+        } catch (MyDBException e) {         
         }
      
     //Fermer l'application

@@ -17,8 +17,8 @@ public class DbWorker implements DbWorkerItf {
     /**
      * Constructeur du worker
      */
-    public DbWorker() {
-        
+    public DbWorker(){
+        listePersonnes = new ArrayList<>(); //Création de la liste pour éviter le NullPointerException à l'utilisation
     }
 
     @Override
@@ -70,9 +70,7 @@ public class DbWorker implements DbWorkerItf {
         }
     }
 
-    public List<Personne> lirePersonnes() throws MyDBException {
-        listePersonnes = new ArrayList<>();
-       
+    public List<Personne> lirePersonnes() throws MyDBException { 
         //Récupération des personnes
         try{
             //Pour éviter des injections SQL
@@ -94,8 +92,8 @@ public class DbWorker implements DbWorkerItf {
     @Override
     public Personne precedentPersonne() throws MyDBException {
         
-        //Récupérer la liste des personnes
-        List<Personne> liste = this.lirePersonnes();
+        //Récupérer la liste des personnes (Si la liste est vide on lit les personnes, sinon on utilise l'attribut)
+        List<Personne> liste = listePersonnes.isEmpty() ? this.lirePersonnes() : this.listePersonnes;
         
         //Mise à jour de l'index (plus petit que 0 on retourne au max, sinon on désincrémente)
         index = index - 1 < 0 ? liste.size() - 1 : index - 1;
@@ -108,8 +106,8 @@ public class DbWorker implements DbWorkerItf {
     @Override
     public Personne suivantPersonne() throws MyDBException {
         
-        //On prend la liste des personnes
-        List<Personne> liste = this.lirePersonnes();
+        //Récupérer la liste des personnes (Si la liste est vide on lit les personnes, sinon on utilise l'attribut)
+        List<Personne> liste = listePersonnes.isEmpty() ? this.lirePersonnes() : this.listePersonnes;
         
         //Mise à jour de l'index (Si on dépasse le max, on retourne à 0, sinon on incérmente)
         index = index + 1 > liste.size() - 1 ? 0 : index + 1;
