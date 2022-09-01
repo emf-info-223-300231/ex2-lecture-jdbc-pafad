@@ -17,19 +17,19 @@ public class DbWorker implements DbWorkerItf {
     /**
      * Constructeur du worker
      */
-    public DbWorker() {
+    public DbWorker(){
+        listePersonnes = new ArrayList<>(); //Création de la liste pour éviter le NullPointerException à l'utilisation
     }
 
     @Override
     public void connecterBdMySQL(String nomDB) throws MyDBException {
         final String url_local = "jdbc:mysql://localhost:3306/" + nomDB;
-        final String url_remote = "jdbc:mysql://LAPEMFB37-21.edu.net.fr.ch:3306/" + nomDB;
         final String user = "root";
         final String password = "emf123";
 
-        System.out.println("url:" + url_remote);
+        System.out.println("url:" + url_local);
         try {
-            dbConnexion = DriverManager.getConnection(url_remote, user, password);
+            dbConnexion = DriverManager.getConnection(url_local, user, password);
         } catch (SQLException ex) {
             throw new MyDBException(SystemLib.getFullMethodName(), ex.getMessage());
         }
@@ -70,23 +70,50 @@ public class DbWorker implements DbWorkerItf {
         }
     }
 
-    public List<Personne> lirePersonnes() throws MyDBException {
-        listePersonnes = new ArrayList<>();
+    public List<Personne> lirePersonnes() throws MyDBException { 
+        //Récupération des personnes
+        try{
+            //Pour éviter des injections SQL
+            PreparedStatement requete = dbConnexion.prepareStatement("select nom, prenom from t_personne");
         
+            //Execution de la requête
+            ResultSet rs = requete.executeQuery();
+            
+            //Pour chaque résultats
+            while(rs.next()){
+                listePersonnes.add(new Personne(rs.getString("Nom"), rs.getString("Prenom"))); //Ajout de la personne avec le nom et prénom 
+            }
+        } catch (SQLException e){
+            
+        }
         return listePersonnes;
     }
 
     @Override
     public Personne precedentPersonne() throws MyDBException {
-
-        return null;
+        
+        //Récupérer la liste des personnes (Si la liste est vide on lit les personnes, sinon on utilise l'attribut)
+        List<Personne> liste = listePersonnes.isEmpty() ? this.lirePersonnes() : this.listePersonnes;
+        
+        //Mise à jour de l'index (plus petit que 0 on retourne au max, sinon on désincrémente)
+        index = index - 1 < 0 ? liste.size() - 1 : index - 1;
+        
+        //Retour de la personne
+        return liste.get(index);
 
     }
 
     @Override
     public Personne suivantPersonne() throws MyDBException {
-
-        return null;
+        
+        //Récupérer la liste des personnes (Si la liste est vide on lit les personnes, sinon on utilise l'attribut)
+        List<Personne> liste = listePersonnes.isEmpty() ? this.lirePersonnes() : this.listePersonnes;
+        
+        //Mise à jour de l'index (Si on dépasse le max, on retourne à 0, sinon on incérmente)
+        index = index + 1 > liste.size() - 1 ? 0 : index + 1;
+        
+        //Retour de la personne
+        return liste.get(index);
 
     }
 

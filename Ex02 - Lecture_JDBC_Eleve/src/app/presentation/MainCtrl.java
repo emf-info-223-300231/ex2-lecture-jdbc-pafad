@@ -12,6 +12,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 import java.io.File;
 import app.workers.DbWorkerItf;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 
 /**
@@ -46,16 +48,37 @@ public class MainCtrl implements Initializable {
 
   @FXML
   public void actionPrevious(ActionEvent event) {
-
+      try{
+        //Récupération de la personne précédente
+        Personne personne = dbWrk.precedentPersonne();
+        
+        //Afficher la personne sur l'interface
+        this.afficherPersonne(personne);
+      } catch (MyDBException e){
+          
+      }
   }
 
   @FXML
   public void actionNext(ActionEvent event) {
-
+      try{
+        //Récupération de la personne suivante
+        Personne personne = dbWrk.suivantPersonne();
+        
+        //Afficher la personne sur l'interface
+        this.afficherPersonne(personne);
+      } catch (MyDBException e){
+      }
   }
 
-  public void quitter() {
-
+  public void quitter() {      
+        try{
+          //Déeconnecter la base de données
+          dbWrk.deconnecter();
+        } catch (MyDBException e) {         
+        }
+     
+    //Fermer l'application
     Platform.exit();
   }
 
@@ -63,7 +86,11 @@ public class MainCtrl implements Initializable {
    * METHODES PRIVEES 
    */
   private void afficherPersonne(Personne p) {
-
+      //Si l'objet n'est pas null
+      if(p != null){
+        txtNom.setText(p.getNom()); //Field du nom
+        txtPrenom.setText(p.getPrenom()); //Field du prénom
+      }
   }
 
   private void ouvrirDB() {
@@ -76,7 +103,7 @@ public class MainCtrl implements Initializable {
           dbWrk.connecterBdHSQLDB("../data" + File.separator + "223_personne_1table");
           break;
         case ACCESS:
-          dbWrk.connecterBdAccess("../data" + File.separator + "223_Personne_1table.accdb");
+          dbWrk.connecterBdAccess("../data/access" + File.separator + "223_Personne_1table.accdb");
           break;
         default:
           System.out.println("Base de données pas définie");
